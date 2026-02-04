@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>เว็บตรวจจับขยะ (ตัวอย่างทดลอง)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f5f5; text-align:center; }
+    h1 { margin-top:20px; }
+    #container { position:relative; display:inline-block; }
+    video { border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+    canvas { position:absolute; left:0; top:0; }
+    button { margin:15px; padding:10px 20px; font-size:16px; border:none; border-radius:8px; cursor:pointer; }
+    .start { background:#4caf50; color:white; }
+    .stop { background:#f44336; color:white; }
+    p { color:#555; }
+  </style>
+</head>
+<body>
+  <h1>🗑️ เว็บตรวจจับขยะ (Demo)</h1>
+  <p>นี่เป็นตัวอย่างหน้าตาเว็บ ยังไม่ได้ใช้ AI จริง<br>แค่จำลองกล่องตรวจจับให้เห็นภาพรวม</p>
+
+  <div id="container">
+    <video id="video" width="480" height="360" autoplay muted></video>
+    <canvas id="canvas" width="480" height="360"></canvas>
+  </div>
+
+  <div>
+    <button class="start" onclick="startCamera()">เปิดกล้อง</button>
+    <button class="stop" onclick="stopCamera()">ปิดกล้อง</button>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let stream;
+    let intervalId;
+
+    async function startCamera() {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      intervalId = setInterval(mockDetect, 800);
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      clearInterval(intervalId);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+
+    function mockDetect() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // สุ่มกล่องตรวจจับ
+      const x = Math.random() * 300;
+      const y = Math.random() * 200;
+      const w = 120;
+      const h = 90;
+
+      ctx.strokeStyle = 'lime';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x, y, w, h);
+
+      ctx.fillStyle = 'lime';
+      ctx.font = '16px Arial';
+      ctx.fillText('Trash 92%', x, y - 5);
+    }
+  </script>
+</body>
+</html>
